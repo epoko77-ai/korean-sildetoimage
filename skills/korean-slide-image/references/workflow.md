@@ -72,7 +72,7 @@ swift "$SKILL_DIR/scripts/ocr_macos.swift" \
 - `status`: `correct`, `incorrect`, `uncertain`. `evidence`: `visual`, `visual+ocr`, `ocr`. OCR만 확인했거나 불확실한 항목은 통과하지 않는다.
 - `ocr_ids`: 그 문구에 해당하는 원시 관측 id를 읽기 순서대로 나열한다. OCR 줄 결합에는 줄바꿈이 유지된다. 줄배치·띄어쓰기·기호 불일치 또는 OCR 누락은 `ocr_note`에 실제 확대 확인 결과를 적는다. OCR을 정답으로 덮어쓰지 않는다.
 - 모든 OCR 관측은 한 번만 대응시킨다. 글자가 아닌 그림자를 OCR이 오인한 경우에만 `ignored_ocr`에 `observation_id`와 시각 확인한 `reason`을 남긴다. 실제 추가 문구는 `inventory.unexpected_text`에 기록한다.
-- `inventory.status`는 전체 화면에서 누락·추가 글자를 찾았을 때만 `complete`. `design.status`는 `passed`, `failed`, `not_checked`. 정상 문자열이라도 획·기준선·배경·합성 경계가 부자연스러우면 실패다.
+- `inventory.status`는 전체 화면에서 누락·추가 글자를 찾았을 때만 `complete`. `design.status`는 `passed`, `failed`, `not_checked`. 교정 후보는 기준본과 같은 배율의 확대 영역 및 실제 표시 크기의 전체 화면을 비교한다. `design.note`에는 비교한 기준본과 글자 폭·굵기·기준선·자간·효과·배경 경계의 관찰을 기록한다. 정상 문자열이라도 다른 서체로 보이거나 배경·합성 경계가 달라지면 실패다. 자세한 채택 기준은 [repair.md](repair.md)를 따른다.
 - OCR이 실행 불가능하면 `ocr_unavailable_reason`에 구체적 이유를 적고 `evidence: visual`로 실제 전사한다. 일부 OCR 실패를 전체 시각 검수 완료로 바꾸지 않는다.
 
 ```bash
@@ -85,7 +85,7 @@ python3 "$SKILL_DIR/scripts/workflow.py" gate \
 
 ## 4. 수정 결과 연결
 
-코드 합성이 허용되었으면 [repair.md](repair.md)에 따라 **수정 전에** 기준본과 영역을 고정한다.
+코드 합성이 현재 지시와 도구 규칙에서 허용되었으면 [repair.md](repair.md)에 따라 **수정 전에** 기준본과 영역을 고정한다. 사용 예시에 합성·폰트 교체를 일괄 허용하는 문장을 요구하지 않는다. 수단의 허용과 디자인 변경 여부는 별개로 판단한다.
 
 ```bash
 python3 "$SKILL_DIR/scripts/workflow.py" freeze \
