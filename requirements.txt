@@ -1,0 +1,2 @@
+# Required by the PNG workflow and composition helpers. Python 3.10+.
+Pillow>=12.2.0,<13
