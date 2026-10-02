@@ -42,10 +42,32 @@ do {
     let observations: [[String: Any]] = (request.results ?? []).enumerated().map { index, result in
         let rect = result.boundingBox
         let candidates = result.topCandidates(3)
+        // Character boxes are localization hints, not exact ink masks. Keep raw text unchanged.
+        var characters: [[String: Any]] = []
+        if let best = candidates.first {
+            let string = best.string
+            var cursor = string.startIndex
+            var offset = 0
+            while cursor < string.endIndex {
+                let next = string.index(after: cursor)
+                var character: [String: Any] = ["index": offset, "text": String(string[cursor..<next])]
+                if let region = try? best.boundingBox(for: cursor..<next) {
+                    let bounds = region.boundingBox
+                    character["bbox"] = [max(0, Int(floor(bounds.minX * width))),
+                                         max(0, Int(floor((1 - bounds.maxY) * height))),
+                                         min(image.width, Int(ceil(bounds.maxX * width))),
+                                         min(image.height, Int(ceil((1 - bounds.minY) * height)))]
+                }
+                characters.append(character)
+                cursor = next
+                offset += 1
+            }
+        }
         return [
             "observation_id": String(format: "ocr-%04d", index + 1),
             "text": candidates.first?.string ?? "",
             "confidence": Double(candidates.first?.confidence ?? 0),
+            "characters": characters,
             "bbox": [max(0, Int(floor(rect.minX * width))),
                      max(0, Int(floor((1 - rect.maxY) * height))),
                      min(image.width, Int(ceil(rect.maxX * width))),

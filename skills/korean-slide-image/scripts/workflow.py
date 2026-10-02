@@ -53,10 +53,26 @@ def inventory(path):
     return items
 
 
-def freeze(source, prompt, out, kind='generate', target_ids=(), references=(), preserve_job=None):
+def freeze(source, prompt, out, kind='generate', target_ids=(), references=(), preserve_job=None, stroke_plan=None):
     items = inventory(source)
-    if kind not in ('generate', 'edit', 'local-font'):
+    if kind not in ('generate', 'edit', 'local-font', 'local-stroke'):
         raise ValueError('Unknown operation kind')
+    frozen_stroke = None
+    if kind == 'local-stroke':
+        import stroke_repair
+        if not stroke_plan:
+            raise ValueError('Local stroke repair requires a reviewed stroke plan')
+        plan = stroke_repair.validate_plan(stroke_plan)
+        if plan['source'] != bound(source):
+            raise ValueError('Stroke plan source differs from request source')
+        if preserve_job and bound(preserve_job) != plan['job']:
+            raise ValueError('Stroke plan and preservation job differ')
+        if list(target_ids) != [plan['item_id']]:
+            raise ValueError('Local stroke request must target only its planned source item')
+        preserve_job = plan['job']['path']
+        frozen_stroke = bound(stroke_plan)
+    elif stroke_plan:
+        raise ValueError('Stroke plan requires the local-stroke operation')
     targets = list(target_ids) if target_ids else list(items)
     if len(targets) != len(set(targets)) or any(i not in items for i in targets):
         raise ValueError('Target ids must be unique source ids')
@@ -79,7 +95,7 @@ def freeze(source, prompt, out, kind='generate', target_ids=(), references=(), p
               'source': bound(source), 'prompt': bound(prompt), 'target_ids': targets,
               'references': [bound(p) for p in references],
               'copy_presence_checked': True, 'layout_review_required': True,
-              'preservation_job': None}
+              'preservation_job': None, 'stroke_plan': frozen_stroke}
     if preserve_job:
         if kind == 'generate':
             raise ValueError('A new-generation request cannot claim repair preservation')
@@ -107,6 +123,14 @@ def load_request(path):
         job = read(check(request['preservation_job']))
         if patch.file_hash(job['base']) != job['base_file_sha256'] or patch.file_hash(job['crop']) != job['crop_sha256']:
             raise ValueError('Frozen repair base/crop changed')
+    if request.get('operation') == 'local-stroke':
+        import stroke_repair
+        if not request.get('stroke_plan'):
+            raise ValueError('Missing frozen stroke plan')
+        plan = stroke_repair.validate_plan(check(request['stroke_plan']))
+        if (plan['source'] != request['source'] or plan['job'] != request.get('preservation_job')
+                or request['target_ids'] != [plan['item_id']]):
+            raise ValueError('Frozen stroke plan linkage changed')
     return request
 
 
@@ -141,8 +165,17 @@ def preserve(request, candidate, report_path):
     if base.size != final.size:
         return {'status': 'failed', 'reason': 'Final dimensions differ from repair baseline'}
     metrics = patch.preservation(base, final, [job['edit_box']])
-    return {'status': 'passed' if linkage and metrics['outside_pixels_equal'] else 'failed',
-            'report': bound(report_path), 'report_linkage_valid': linkage, **metrics}
+    stroke_metrics = None
+    if request.get('operation') == 'local-stroke':
+        import stroke_repair
+        stroke_metrics = stroke_repair.verify_result(check(request['stroke_plan']), candidate['image']['path'])
+        linkage = (linkage and report.get('stroke_plan') == request['stroke_plan']
+                   and report.get('request') == candidate['request'] and stroke_metrics['passed'])
+    result = {'status': 'passed' if linkage and metrics['outside_pixels_equal'] else 'failed',
+              'report': bound(report_path), 'report_linkage_valid': linkage, **metrics}
+    if stroke_metrics is not None:
+        result['stroke_mask'] = stroke_metrics
+    return result
 
 
 def gate(candidate_path, review_path, out, ocr_path=None, patch_report=None):
@@ -301,10 +334,11 @@ def main():
     fr = sub.add_parser('freeze')
     for key in ('source', 'prompt', 'out'):
         fr.add_argument('--'+key, required=True)
-    fr.add_argument('--kind', choices=['generate', 'edit', 'local-font'], default='generate')
+    fr.add_argument('--kind', choices=['generate', 'edit', 'local-font', 'local-stroke'], default='generate')
     fr.add_argument('--target-id', action='append', default=[])
     fr.add_argument('--reference', action='append', default=[])
     fr.add_argument('--preserve-job')
+    fr.add_argument('--stroke-plan')
     reg = sub.add_parser('register')
     for key in ('request', 'actual-prompt', 'image', 'out'):
         reg.add_argument('--'+key, required=True)
@@ -320,7 +354,7 @@ def main():
     args = parser.parse_args()
     try:
         if args.command == 'freeze':
-            value = freeze(args.source, args.prompt, args.out, args.kind, args.target_id, args.reference, args.preserve_job)
+            value = freeze(args.source, args.prompt, args.out, args.kind, args.target_id, args.reference, args.preserve_job, args.stroke_plan)
         elif args.command == 'register':
             value = register(args.request, args.actual_prompt, args.image, args.out)
         elif args.command == 'gate':

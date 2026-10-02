@@ -1,0 +1,229 @@
+{
+  "schema_version": 1,
+  "scope": "Descriptive convenience samples; AI visual reviews, not independent human certification. Generation guidance and repair workflows are separate experiments.",
+  "generation_comparison": {
+    "date": "2026-09-30",
+    "conditions": 8,
+    "replicates_per_condition_arm": 3,
+    "arms": {
+      "without-skill": {
+        "images": 24,
+        "source_items": 465,
+        "hangul_pass_images": 14,
+        "hangul_error_items": 13,
+        "hangul_uncertain_items": 5,
+        "hangul_characters": 6678,
+        "confirmed_hangul_edits": 13,
+        "hangul_cer": null,
+        "numeric_error_items": 1,
+        "numeric_uncertain_items": 0,
+        "complete_copy_pass_images": 14,
+        "design_pass_images": 20,
+        "copy_and_design_pass_images": 13
+      },
+      "with-skill": {
+        "images": 24,
+        "source_items": 465,
+        "hangul_pass_images": 18,
+        "hangul_error_items": 10,
+        "hangul_uncertain_items": 5,
+        "hangul_characters": 6678,
+        "confirmed_hangul_edits": 10,
+        "hangul_cer": null,
+        "numeric_error_items": 0,
+        "numeric_uncertain_items": 0,
+        "complete_copy_pass_images": 18,
+        "design_pass_images": 21,
+        "copy_and_design_pass_images": 16
+      }
+    },
+    "small_type_hangul_pass_images": {
+      "without-skill": 0,
+      "with-skill": 0,
+      "images_per_arm": 3
+    },
+    "protocol_sha256": "7ca79ba755aece3b6ab5c3a7e186c4815b030488145b00397732cfb2e7d802fd",
+    "local_scores_sha256": "040646edf50721140edda883365354ee4a792fc7b9e1df10e7c18f71a6124e3e"
+  },
+  "repair_pilot": {
+    "date": "2026-09-30",
+    "original_images": 6,
+    "targets": 7,
+    "visual_reads_per_candidate": 2,
+    "methods": {
+      "A": {
+        "targets": 7,
+        "target_correct": 3,
+        "target_incorrect": 2,
+        "target_uncertain": 2,
+        "design_pass": 7,
+        "joint_pass": 3,
+        "agreed_incorrect_baselines": 3,
+        "joint_pass_on_agreed_incorrect_baselines": 2,
+        "guard_preserved": 10,
+        "guard_total": 10,
+        "changed_pixels": [
+          2987,
+          1085,
+          2645,
+          1525,
+          2214,
+          1894,
+          1408
+        ],
+        "outside_region_changed_pixels": 0,
+        "image_generation_calls": 7,
+        "image_generation_wall_seconds": 323.074,
+        "ocr_expected_word_present": 3
+      },
+      "B": {
+        "targets": 7,
+        "target_correct": 2,
+        "target_incorrect": 4,
+        "target_uncertain": 1,
+        "design_pass": 7,
+        "joint_pass": 2,
+        "agreed_incorrect_baselines": 3,
+        "joint_pass_on_agreed_incorrect_baselines": 1,
+        "guard_preserved": 10,
+        "guard_total": 10,
+        "changed_pixels": [
+          766,
+          621,
+          724,
+          838,
+          718,
+          642,
+          710
+        ],
+        "outside_region_changed_pixels": 0,
+        "image_generation_calls": 7,
+        "image_generation_wall_seconds": 318.51,
+        "ocr_expected_word_present": 2
+      },
+      "C": {
+        "targets": 7,
+        "target_correct": 5,
+        "target_incorrect": 1,
+        "target_uncertain": 1,
+        "design_pass": 7,
+        "joint_pass": 5,
+        "agreed_incorrect_baselines": 3,
+        "joint_pass_on_agreed_incorrect_baselines": 3,
+        "guard_preserved": 10,
+        "guard_total": 10,
+        "changed_pixels": [
+          6,
+          6,
+          9,
+          13,
+          15,
+          16,
+          6
+        ],
+        "outside_region_changed_pixels": 0,
+        "image_generation_calls": 0,
+        "image_generation_wall_seconds": 0,
+        "ocr_expected_word_present": 7
+      }
+    },
+    "method_labels": {
+      "A": "word-level generated edit, region-composited",
+      "B": "glyph-reference generated edit, region-composited",
+      "C": "manually planned stroke pixel repair"
+    },
+    "limits": [
+      "Known targets, manual coordinates and manually planned 6–16-pixel masks; detection and mask automation unmeasured.",
+      "Seven targets share six originals; selected known error patterns, not a population sample or held-out benchmark.",
+      "A versus B changes edit unit and visual-reference conditioning, so it does not isolate reference conditioning.",
+      "A/B results are hard-composited into frozen regions; full generated images are not guaranteed to preserve the rest of the slide.",
+      "Uncertain baselines are reported separately; target pass on these is not counted as a confirmed repair gain."
+    ],
+    "local_scores_sha256": "5f20911a4483839b088ed61e5580756b40b8f6b237248c89ab40b94a071ca0e2"
+  },
+  "evidence_availability": "Aggregate results and helper tests are public. Raw generated images, font files and records containing machine-local paths are not part of the package.",
+  "stroke_holdout": {
+    "dates": [
+      "2026-10-01",
+      "2026-10-02"
+    ],
+    "input_kind": "Controlled font renders; not AI generation",
+    "font_families": [
+      "Apple SD Gothic Neo",
+      "NanumGothic",
+      "NanumMyeongjo"
+    ],
+    "nominal_pixel_size_range": [
+      22,
+      42
+    ],
+    "summary": {
+      "images": 18,
+      "true_errors": 10,
+      "normal_controls": 8,
+      "identified_errors": 9,
+      "missed_errors": 1,
+      "uncertain_initial_errors": 0,
+      "false_initial_error_flags_on_normal": 0,
+      "normal_controls_changed": 0,
+      "attempts": 7,
+      "deferred_errors": 2,
+      "changed_pixels_total": 167,
+      "changed_pixels_by_attempt": [
+        44,
+        28,
+        6,
+        36,
+        9,
+        30,
+        14
+      ],
+      "all_masks_inside_true_glyph": true,
+      "all_stroke_preservation_passed": true,
+      "ocr_agreed_with_source_on_true_errors": 1,
+      "normal_ocr_false_differences": 0,
+      "confirmed_repairs": 7,
+      "failed_or_uncertain_attempts": 0,
+      "correct_final_images": 15,
+      "remaining_error_images": 3,
+      "simple_vowel_cases": 8,
+      "independent_audit_false_correct_on_retained_errors": 1
+    },
+    "protocol": "Known correct source copy; hidden error labels/coordinates; one applied candidate per image; fixed implementation and outcomes before truth reveal.",
+    "limits": [
+      "18 controlled font-rendered cards, not AI generation or natural-error prevalence. 8 simple vowel errors, 2 intentional difficult cases and 8 normal controls.",
+      "Operators saw source text and input pixels but not private error labels, coordinates or clean font renders. One applied candidate per image; no outcome-driven mask tuning.",
+      "Location and stroke selection were performed by agents; automatic glyph segmentation was not tested or implemented.",
+      "One retained typo was falsely read as correct by the operator, raw OCR and independent AI audit. Exact fixture labels and post-seal isolated-glyph inspection retain it as an error.",
+      "Candidate evaluation combines operator full-frame review, independent AI full-frame/glyph audit, and a truth-aware isolated-glyph read by root. No independent human review.",
+      "The repaired glyphs differ from canonical clean font renders. Visual legibility and design preservation do not establish exact font restoration.",
+      "Wall time includes long approval/scheduler gaps and interleaved cases; active operator time was not measured and no speed comparison is made.",
+      "After the frozen execution was sealed, invalid/empty OCR geometry was changed to retain text differences and defer coordinate mapping to visual review. This is covered by a regression test, not claimed as an improvement on the 18-case detection result."
+    ],
+    "execution_seal_sha256": "a34ed3a8aa05d96bba746375962e5136249bfb731f8ad1a11a3c00f7b7ce0f75",
+    "local_scores_sha256": "9e50a2ef6fa7e629fb98c05f3af31dbf55dc8fd74835477a939a8b9a01f92213"
+  },
+  "new_generated_repair_cases": {
+    "images": 2,
+    "intentionally_seeded_errors": true,
+    "generation_calls": 2,
+    "rerolls": 0,
+    "confirmed_repairs": 1,
+    "deferred": 1,
+    "changed_pixels": [
+      199,
+      0
+    ],
+    "outside_mask_changed_pixels": [
+      0,
+      0
+    ],
+    "note": "The 2 new generated slides were intentionally prompted with errors; they are reported separately and have no rerolls. One was repaired and one was deferred."
+  },
+  "mechanical_validation": {
+    "unit_tests_passed": 44,
+    "independent_review_assertions_passed": 19,
+    "checks_do_not_read_hangul": true,
+    "post_study_fix": "Invalid or empty OCR geometry now preserves copy differences and requests visual location instead of terminating the locator."
+  }
+}

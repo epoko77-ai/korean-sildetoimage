@@ -21,7 +21,7 @@ python3 "$SKILL_DIR/scripts/workflow.py" freeze \
   --out "$RUN_DIR/request.json"
 ```
 
-참조 이미지가 있으면 `--reference /absolute/reference.png`를 반복한다. 각 이미지의 역할은 프롬프트에 적는다. 생성에서는 모든 문구가 필요하다. 편집에서는 `--kind edit --target-id value`처럼 수정 대상만 프롬프트에 넣을 수 있지만 최종 검수는 **원문 전체**를 대상으로 한다. 폰트 합성 계획은 `--kind local-font`로 기록한다.
+참조 이미지가 있으면 `--reference /absolute/reference.png`를 반복한다. 각 이미지의 역할은 프롬프트에 적는다. 생성에서는 모든 문구가 필요하다. 편집에서는 `--kind edit --target-id value`처럼 수정 대상만 프롬프트에 넣을 수 있지만 최종 검수는 **원문 전체**를 대상으로 한다. 폰트 합성 계획은 `--kind local-font`로 기록한다. 시각 확인한 획 제거는 `--kind local-stroke --stroke-plan plan.json --target-id value`로 기록하며, 연결된 보존 job은 계획에서 가져온다. 자세한 순서는 [획 단위 복구](stroke-repair.md)를 따른다. 두 로컬 경로의 prompt 파일은 확정 문구와 실행 계획 메모이며, 이를 이미지 생성 호출로 보고하지 않는다.
 
 검사는 중복 id, 빈 원문, U+FFFD, 프롬프트의 필수 문구 누락을 거절한다. 원문과 프롬프트 파일은 고치지 않는다. NFC와 JSON 이스케이프 표현만 비교에 허용한다. 의미 충돌, 가독성, 올바른 참조 역할까지 자동 검사하지는 않는다. 예를 들어 원문을 포함한 뒤 ‘그 문구를 생략하라’고 쓴 요청도 문자열 검사는 통과하므로 실제 지시는 별도 검토한다.
 
