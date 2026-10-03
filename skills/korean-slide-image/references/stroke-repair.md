@@ -21,6 +21,41 @@ python3 "$SKILL_DIR/scripts/stroke_repair.py" locate \
 
 실제 별도 시험에서는 `뎌`를 OCR과 실행자가 모두 `더`로 읽어 놓친 사례가 있었다. OCR 일치와 시각 검수 기록이 함께 있어도 무오류의 증거가 되지는 않는다. 문맥상 자연스러운 단어로 보완해 읽지 말고 획 자체를 확인하며, 결과 보고에서도 자동 검수 보장으로 설명하지 않는다.
 
+### 문맥과 분리한 글자 점검
+
+`glyph_inspect.py`는 원문에서 모음이 `ㅡ`·`ㅓ`인 음절과 개별 대응 가능한 OCR 불일치를 점검 카드로 만든다. OCR이 원문과 같아도 카드를 만든다. 부정확한 좌표 때문에 획이 잘리지 않도록 주변 여백을 포함하며, 픽셀을 최근접 방식으로 확대한다. 파란 표시가 가리키는 곳은 대략적인 위치다. 표시 밖에 있는 실제 획까지 보고 음절 전체를 읽는다.
+
+```bash
+python3 "$SKILL_DIR/scripts/glyph_inspect.py" prepare \
+  --image "$RUN_DIR/base.png" --source "$RUN_DIR/source.json" \
+  --ocr "$RUN_DIR/ocr.json" --out-dir "$RUN_DIR/inspection"
+```
+
+먼저 `blind.json`이 가리키는 카드 또는 묶음 이미지만 보고 한 음절씩 전사한다. 가능하면 원문을 아직 읽지 않은 별도 검수자에게 이 자료만 전달한다. 혼자 작업할 때는 이미 원문을 봤을 수 있으므로 독립 판독이라고 주장하지 않는다. 이 단계에서 `packet.json`의 정답이나 원시 OCR 전사를 참고해 읽은 글자를 고치지 않는다. 대상이 두 글자로 보이거나 획이 잘려 있으면 `uncertain`으로 남기고 전체 화면에서 위치를 다시 찾는다.
+
+`readings.json` 구조:
+
+```json
+{
+  "blind_sha256":"<blind.json SHA-256>",
+  "reviewer":"<실제 판독자>",
+  "entries":[
+    {"id":"<카드 id>","status":"readable","observed_text":"<본 한 음절>"},
+    {"id":"<다른 id>","status":"uncertain","observed_text":null,"note":"<불확실한 이유>"}
+  ]
+}
+```
+
+전사를 저장한 다음 정답과 대조한다.
+
+```bash
+python3 "$SKILL_DIR/scripts/glyph_inspect.py" compare \
+  --packet "$RUN_DIR/inspection/packet.json" --readings "$RUN_DIR/readings.json" \
+  --out "$RUN_DIR/inspection-findings.json"
+```
+
+`possible_difference`는 재확인할 위치이며 오자 확정이나 삭제 허가가 아니다. `unmapped`와 누락·불확실 판독은 시각 확인 대상으로 남는다. 카드에 없는 문구·숫자·추가 텍스트도 기존 전체 검수에서 확인한다. 이 보조 도구는 입력 이미지를 수정하지 않고 마스크도 만들지 않는다. 카드 판독과 원문 대조 후에는 **원본 문맥에서 실제 위치·전체 글자 구조를 확인**하고 아래 수정 판단으로 이어간다.
+
 대상 단어를 최근접 방식으로 8~16배 확대하고 다음을 확인한다.
 
 - 초성·중성·종성 중 어디가 다른지, 지울 부분과 보존할 부분이 분리되는지.

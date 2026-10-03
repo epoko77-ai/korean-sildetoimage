@@ -1,0 +1,49 @@
+cohort,case_id,font_family,font_px,true_typo,baseline_status,inspection_status,baseline_error_detected,inspection_error_detected
+initial-12,833e78065d05f978,Apple SD Gothic Neo,24,True,incorrect,incorrect,True,True
+initial-12,119f1a2f3a317c45,Nanum Gothic,28,True,incorrect,incorrect,True,True
+initial-12,57326ad00b691031,Nanum Myeongjo,32,True,correct,incorrect,False,True
+initial-12,89d4174e5b80c8a4,Apple SD Gothic Neo,36,True,incorrect,incorrect,True,True
+initial-12,4457fb2ecc4a5b1c,Nanum Gothic,40,True,incorrect,incorrect,True,True
+initial-12,249d3a4ddb84ade2,Nanum Myeongjo,42,True,incorrect,incorrect,True,True
+initial-12,6ea73e86bfd52d6a,Apple SD Gothic Neo,24,False,correct,correct,False,False
+initial-12,6440ce3d3e2f573a,Nanum Gothic,28,False,correct,correct,False,False
+initial-12,ed1c712e14125fb7,Nanum Myeongjo,32,False,correct,correct,False,False
+initial-12,82b3f9a6c4ae46a6,Apple SD Gothic Neo,36,False,correct,correct,False,False
+initial-12,e35198808da6c932,Nanum Gothic,40,False,correct,correct,False,False
+initial-12,c9f1cdbecf07d2fb,Nanum Myeongjo,42,False,correct,correct,False,False
+expanded-36,43abb20957ef10cad7888c55,NanumGothic,18,False,correct,correct,False,False
+expanded-36,a7ff7c5f4d48d5b84726998c,NanumGothic,42,False,correct,correct,False,False
+expanded-36,2ca23619c6985cade5acfb7d,NanumMyeongjo,22,False,correct,correct,False,False
+expanded-36,111e5ea01c8ea99de54cfc60,NanumMyeongjo,30,False,correct,correct,False,False
+expanded-36,2786300e702ea70ae81e63bd,Apple SD Gothic Neo,42,True,correct,incorrect,False,True
+expanded-36,42cc4b357099744e459bed5c,NanumMyeongjo,26,False,correct,correct,False,False
+expanded-36,5f67a9be3fd9a0fad46109c6,NanumGothic,30,False,correct,correct,False,False
+expanded-36,6c112967e3817a6a4de3cbb9,NanumMyeongjo,26,True,incorrect,incorrect,True,True
+expanded-36,72e95960052711bd3cbc3098,NanumGothic,22,True,incorrect,incorrect,True,True
+expanded-36,49d88c57c9a749c00731b27c,Apple SD Gothic Neo,26,True,incorrect,incorrect,True,True
+expanded-36,a0083f609358ad632b216020,Apple SD Gothic Neo,42,False,correct,correct,False,False
+expanded-36,d80a076db4aa0fb0868a27d7,Apple SD Gothic Neo,22,False,correct,correct,False,False
+expanded-36,be365b9a3d55bba535303f01,NanumGothic,26,False,correct,correct,False,False
+expanded-36,8d70c3c47bb672441c3bd6a2,NanumMyeongjo,18,True,incorrect,incorrect,True,True
+expanded-36,f12e213963b115633ab7d379,NanumMyeongjo,36,True,incorrect,incorrect,True,True
+expanded-36,173c42ed6b526a4db9bfc755,Apple SD Gothic Neo,30,False,correct,correct,False,False
+expanded-36,02c665a3b8ce31f52793034f,NanumGothic,36,False,correct,correct,False,False
+expanded-36,67b1b3be7ec523d2d4010d1d,NanumMyeongjo,36,False,correct,correct,False,False
+expanded-36,8d881a4acdaf916243609026,NanumGothic,18,True,incorrect,incorrect,True,True
+expanded-36,605a5ff927112468262472c9,Apple SD Gothic Neo,18,False,correct,correct,False,False
+expanded-36,5c3f4239d69df8b0ed559716,NanumMyeongjo,42,False,correct,correct,False,False
+expanded-36,ef5354fb63322b0529737837,NanumGothic,30,True,incorrect,incorrect,True,True
+expanded-36,84fdf712dd6c1ac25b9f6ec2,Apple SD Gothic Neo,26,False,correct,correct,False,False
+expanded-36,b13b163659085ae9edc4e409,NanumGothic,36,True,incorrect,incorrect,True,True
+expanded-36,199e14807705ba702806fef3,NanumMyeongjo,30,True,incorrect,incorrect,True,True
+expanded-36,e8c917f821308f68abfde75a,Apple SD Gothic Neo,30,True,incorrect,incorrect,True,True
+expanded-36,4c350cf0246f6b64627cf5ae,NanumMyeongjo,22,True,incorrect,incorrect,True,True
+expanded-36,d394237d4a553ae334e692e6,Apple SD Gothic Neo,36,False,correct,correct,False,False
+expanded-36,1c75e347e33bde72be1d6bf2,NanumMyeongjo,18,False,correct,correct,False,False
+expanded-36,28542eeef9b5321cee7228dd,NanumGothic,22,False,correct,correct,False,False
+expanded-36,73f6500e965814d75cc7dc83,NanumGothic,26,True,incorrect,incorrect,True,True
+expanded-36,c2c7268a916c971f2e693056,NanumMyeongjo,42,True,incorrect,incorrect,True,True
+expanded-36,0fdf727ff40088f5e17f4ed1,Apple SD Gothic Neo,18,True,incorrect,incorrect,True,True
+expanded-36,adc29858ca78a123ba5dd93e,Apple SD Gothic Neo,36,True,incorrect,incorrect,True,True
+expanded-36,f277deb6eb720986910b6711,NanumGothic,42,True,incorrect,incorrect,True,True
+expanded-36,25e23ad206a4c89a2025bb19,Apple SD Gothic Neo,22,True,incorrect,incorrect,True,True

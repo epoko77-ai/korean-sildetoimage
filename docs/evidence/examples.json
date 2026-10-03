@@ -1,0 +1,275 @@
+{
+  "scope": "Three selected repair illustrations; not a success-rate sample. Original PNG bytes and mask files, with the frozen pixel segments.",
+  "examples": [
+    {
+      "id": "generated-gungeo",
+      "scope": "AI-generated, intentionally seeded typo; held-out repair example",
+      "before": {
+        "path": "generated-gungeo/before.png",
+        "sha256": "ce88b318558cf785b268b5e367facc63b4bed59f5c315e6317c24174d6eabfa1"
+      },
+      "after": {
+        "path": "generated-gungeo/after.png",
+        "sha256": "310d04f8e9a268d5bca32cfa0eb7ca665d484ebfcb9a36464ca269044a0b6379"
+      },
+      "mask": {
+        "path": "generated-gungeo/mask.png",
+        "sha256": "8bb2852c3db5ebf32d3b57e971f9261c6c964313441e4d4e0d22c8ec2d70be8e"
+      },
+      "expected_text": "문장에 담긴 근거를 확인합니다.",
+      "observed_text_before": "문장에 담긴 군거를 확인합니다.",
+      "glyph_box": [
+        495,
+        427,
+        565,
+        502
+      ],
+      "segments": [
+        {
+          "axis": "horizontal",
+          "fixed": 464,
+          "start": 525,
+          "end": 535
+        },
+        {
+          "axis": "horizontal",
+          "fixed": 465,
+          "start": 525,
+          "end": 535
+        },
+        {
+          "axis": "horizontal",
+          "fixed": 466,
+          "start": 525,
+          "end": 535
+        },
+        {
+          "axis": "horizontal",
+          "fixed": 467,
+          "start": 525,
+          "end": 535
+        },
+        {
+          "axis": "horizontal",
+          "fixed": 468,
+          "start": 525,
+          "end": 535
+        },
+        {
+          "axis": "horizontal",
+          "fixed": 469,
+          "start": 525,
+          "end": 535
+        },
+        {
+          "axis": "horizontal",
+          "fixed": 470,
+          "start": 525,
+          "end": 535
+        },
+        {
+          "axis": "horizontal",
+          "fixed": 471,
+          "start": 525,
+          "end": 535
+        },
+        {
+          "axis": "horizontal",
+          "fixed": 472,
+          "start": 525,
+          "end": 535
+        },
+        {
+          "axis": "horizontal",
+          "fixed": 473,
+          "start": 525,
+          "end": 535
+        },
+        {
+          "axis": "horizontal",
+          "fixed": 474,
+          "start": 525,
+          "end": 535
+        },
+        {
+          "axis": "horizontal",
+          "fixed": 475,
+          "start": 525,
+          "end": 535
+        },
+        {
+          "axis": "horizontal",
+          "fixed": 476,
+          "start": 525,
+          "end": 535
+        },
+        {
+          "axis": "horizontal",
+          "fixed": 477,
+          "start": 525,
+          "end": 535
+        },
+        {
+          "axis": "horizontal",
+          "fixed": 478,
+          "start": 525,
+          "end": 535
+        },
+        {
+          "axis": "horizontal",
+          "fixed": 479,
+          "start": 525,
+          "end": 535
+        },
+        {
+          "axis": "horizontal",
+          "fixed": 480,
+          "start": 525,
+          "end": 535
+        },
+        {
+          "axis": "horizontal",
+          "fixed": 481,
+          "start": 525,
+          "end": 535
+        },
+        {
+          "axis": "horizontal",
+          "fixed": 482,
+          "start": 525,
+          "end": 535
+        },
+        {
+          "axis": "horizontal",
+          "fixed": 483,
+          "start": 525,
+          "end": 535
+        }
+      ],
+      "changed_pixels": 199,
+      "outside_mask_changed_pixels": 0,
+      "visual_result": "correct; design preserved",
+      "visual_review_is_ai_attestation": true
+    },
+    {
+      "id": "controlled-heureum",
+      "scope": "Controlled held-out font card",
+      "before": {
+        "path": "controlled-heureum/before.png",
+        "sha256": "0617c0f34e2db38dbcbef358d7bf86bc1e54fbab3a13a449425f216644755c60"
+      },
+      "after": {
+        "path": "controlled-heureum/after.png",
+        "sha256": "31e4b7c5cbcabbc2725c256af4cf6ed1898b689553dd42bbb6f511d0c9568b58"
+      },
+      "mask": {
+        "path": "controlled-heureum/mask.png",
+        "sha256": "b20ad9ac140a5bb290738d3bf50652b5f9c91457b931f876f3b90375cdd708ad"
+      },
+      "expected_text": "새로운 흐름을 차분하게 살펴봅니다.",
+      "observed_text_before": "새로운 후름을 차분하게 살펴봅니다.",
+      "glyph_box": [
+        208,
+        376,
+        236,
+        405
+      ],
+      "segments": [
+        {
+          "axis": "horizontal",
+          "fixed": 397,
+          "start": 220,
+          "end": 224
+        },
+        {
+          "axis": "horizontal",
+          "fixed": 398,
+          "start": 220,
+          "end": 224
+        },
+        {
+          "axis": "horizontal",
+          "fixed": 399,
+          "start": 220,
+          "end": 224
+        },
+        {
+          "axis": "horizontal",
+          "fixed": 400,
+          "start": 220,
+          "end": 224
+        },
+        {
+          "axis": "horizontal",
+          "fixed": 401,
+          "start": 220,
+          "end": 224
+        },
+        {
+          "axis": "horizontal",
+          "fixed": 402,
+          "start": 220,
+          "end": 224
+        },
+        {
+          "axis": "horizontal",
+          "fixed": 403,
+          "start": 220,
+          "end": 224
+        }
+      ],
+      "changed_pixels": 28,
+      "outside_mask_changed_pixels": 0,
+      "visual_result": "correct; design preserved",
+      "visual_review_is_ai_attestation": true
+    },
+    {
+      "id": "development-kkeut",
+      "scope": "Post-truth development demo; excluded from held-out detection and repair rates",
+      "before": {
+        "path": "development-kkeut/before.png",
+        "sha256": "ac933a9a3fb5f07637ba3349f44749e2222895fc9b4ca12bdeb1ac1e75942037"
+      },
+      "after": {
+        "path": "development-kkeut/after.png",
+        "sha256": "80cd84421c3256cc4a3bc0bce1ea295241826fdf4d6100442a69d1b2e41e7465"
+      },
+      "mask": {
+        "path": "development-kkeut/mask.png",
+        "sha256": "974ff4649ece29738286b73332f3c39cab026a15b5d19e712470d25d1f29fb30"
+      },
+      "expected_text": "숲길 끝에는 빈 집이 있다.",
+      "observed_text_before": "숲길 꿑에는 빈 집이 있다.",
+      "glyph_box": [
+        111,
+        73,
+        149,
+        107
+      ],
+      "segments": [
+        {
+          "axis": "horizontal",
+          "fixed": 88,
+          "start": 128,
+          "end": 132
+        },
+        {
+          "axis": "horizontal",
+          "fixed": 89,
+          "start": 128,
+          "end": 132
+        },
+        {
+          "axis": "horizontal",
+          "fixed": 90,
+          "start": 128,
+          "end": 132
+        }
+      ],
+      "changed_pixels": 12,
+      "outside_mask_changed_pixels": 0,
+      "visual_result": "correct; design preserved",
+      "visual_review_is_ai_attestation": true
+    }
+  ]
+}

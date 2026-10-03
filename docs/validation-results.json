@@ -141,7 +141,7 @@
     ],
     "local_scores_sha256": "5f20911a4483839b088ed61e5580756b40b8f6b237248c89ab40b94a071ca0e2"
   },
-  "evidence_availability": "Aggregate results and helper tests are public. Raw generated images, font files and records containing machine-local paths are not part of the package.",
+  "evidence_availability": "Aggregate results, per-case detection outcomes, and a small selection of before/after, missed and deferred examples are public. Full raw experiment images, OCR, prompts and logs remain local; there is no large evidence download. Selected original PNGs and masks can be mechanically checked with tools/verify_examples.py.",
   "stroke_holdout": {
     "dates": [
       "2026-10-01",
@@ -221,9 +221,159 @@
     "note": "The 2 new generated slides were intentionally prompted with errors; they are reported separately and have no rerolls. One was repaired and one was deferred."
   },
   "mechanical_validation": {
-    "unit_tests_passed": 44,
+    "unit_tests_passed": 52,
     "independent_review_assertions_passed": 19,
     "checks_do_not_read_hangul": true,
     "post_study_fix": "Invalid or empty OCR geometry now preserves copy differences and requests visual location instead of terminating the locator."
+  },
+  "glyph_inspection_initial": {
+    "date": "2026-10-03",
+    "summary": {
+      "images": 12,
+      "actual_errors": 6,
+      "normal_controls": 6,
+      "baseline": {
+        "errors_found": 5,
+        "errors_missed": 1,
+        "normal_false_flags": 0,
+        "uncertain_images": 0
+      },
+      "inspection": {
+        "errors_found": 6,
+        "errors_missed": 0,
+        "normal_false_flags": 0,
+        "uncertain_images": 0
+      },
+      "isolated_stage": {
+        "glyph_cards": 36,
+        "whole_glyph_contained": 36,
+        "correct_transcriptions": 34,
+        "wrong_transcriptions": 1,
+        "uncertain": 1,
+        "true_errors_flagged": 4,
+        "normal_glyph_false_flags": 0
+      }
+    },
+    "limits": [
+      "12 controlled font cards, 6 errors; not actual generated slides or population prevalence.",
+      "One fresh agent per arm; differences may include reviewer variation as well as viewing workflow.",
+      "Card-only transcription is not sufficient. Final inspection outcome includes full-context/source review.",
+      "No deletion or repair candidates were made; this does not establish improved stroke-removal success.",
+      "Known previous dyeo/deo miss is development evidence, excluded from held-out counts."
+    ],
+    "execution_seal_sha256": "3762692161eb95b5b9556c6c1d50cbfbf05e5f5752490816371255e14dbbda5b"
+  },
+  "post_study_repair_demo": {
+    "case": "57326ad00b691031",
+    "correction": "꿑→끝",
+    "changed_pixels": 12,
+    "outside_mask_changed_pixels": 0,
+    "image_generation_calls": 0,
+    "scope": "Post-truth development example, excluded from held-out detection and repair rates.",
+    "review": "Root plus separate AI reviewer; whole image and glyph inspection, actual OCR, gate/release."
+  },
+  "glyph_inspection_expanded": {
+    "date": "2026-10-03",
+    "summary": {
+      "images": 36,
+      "actual_errors": 18,
+      "normal_controls": 18,
+      "baseline": {
+        "errors_found": 17,
+        "errors_missed": 1,
+        "normal_false_flags": 0,
+        "uncertain_images": 0
+      },
+      "inspection": {
+        "errors_found": 18,
+        "errors_missed": 0,
+        "normal_false_flags": 0,
+        "uncertain_images": 0
+      },
+      "isolated_stage": {
+        "glyph_cards": 109,
+        "whole_glyph_contained": 108,
+        "geometry_without_truth_box": 1,
+        "correct_transcriptions": 109,
+        "wrong_transcriptions": 0,
+        "uncertain": 0,
+        "true_errors_flagged": 18,
+        "normal_glyph_false_flags": 0,
+        "unmapped_targets": 0
+      }
+    },
+    "by_font_size": {
+      "18": {
+        "images": 6,
+        "actual_errors": 3,
+        "baseline_found": 3,
+        "inspection_found": 3
+      },
+      "22": {
+        "images": 6,
+        "actual_errors": 3,
+        "baseline_found": 3,
+        "inspection_found": 3
+      },
+      "26": {
+        "images": 6,
+        "actual_errors": 3,
+        "baseline_found": 3,
+        "inspection_found": 3
+      },
+      "30": {
+        "images": 6,
+        "actual_errors": 3,
+        "baseline_found": 3,
+        "inspection_found": 3
+      },
+      "36": {
+        "images": 6,
+        "actual_errors": 3,
+        "baseline_found": 3,
+        "inspection_found": 3
+      },
+      "42": {
+        "images": 6,
+        "actual_errors": 3,
+        "baseline_found": 2,
+        "inspection_found": 3
+      }
+    },
+    "limits": [
+      "36 controlled font cards, 18 errors; not actual generated slides or population prevalence.",
+      "One fresh agent per arm; workflow effect and reviewer variation cannot be isolated.",
+      "Final inspection outcome includes full-context/source review; card-only readings are separate.",
+      "No deletion or repair candidates were made; detection gain is not removal success."
+    ],
+    "execution_seal_sha256": "aa1856e7cff19a781575b04d252f8c0f8883bc26c7ae792bab877c4f2fa6c9df"
+  },
+  "glyph_inspection_combined": {
+    "summary": {
+      "images": 48,
+      "actual_errors": 24,
+      "normal_controls": 24,
+      "baseline": {
+        "errors_found": 22,
+        "errors_missed": 2,
+        "normal_false_flags": 0,
+        "uncertain_images": 0
+      },
+      "inspection": {
+        "errors_found": 24,
+        "errors_missed": 0,
+        "normal_false_flags": 0,
+        "uncertain_images": 0
+      },
+      "isolated_stage": {
+        "glyph_cards": 145,
+        "correct_transcriptions": 143,
+        "wrong_transcriptions": 1,
+        "uncertain": 1,
+        "true_errors_flagged": 22,
+        "normal_glyph_false_flags": 0
+      }
+    },
+    "interpretation": "Descriptive sum of two separately executed controlled-font cohorts (12+36). Final outcome includes isolated reading then whole-context review. No deletion success-rate measurement; one different reviewer per arm per cohort, so workflow and reader variation cannot be isolated."
   }
 }

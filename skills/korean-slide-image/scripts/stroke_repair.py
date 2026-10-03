@@ -83,7 +83,16 @@ def locate(image_path, source_path, ocr_path, out):
                              for n, o in enumerate(observations)]
     for sid, item in source.items():
         ranked = sorted(similarities[sid], reverse=True)
-        result = {'id': sid, 'expected_text': item['text'], 'status': 'needs_visual_mapping', 'differences': []}
+        expected = text.canonical(item['text'])
+        # OCR agreement can hide a malformed vowel. Keep these inspection targets
+        # even when the OCR line/character geometry cannot be used.
+        targets = {i: {'expected_index': i, 'expected': char, 'observed_index': None,
+                       'raw_ocr': None, 'glyph_bbox': None, 'reason': 'removal_target_vowel',
+                       'localization': 'needs_visual_location'}
+                   for i, char in enumerate(expected)
+                   if decompose(char) and decompose(char)[1] in ('ㅡ', 'ㅓ')}
+        result = {'id': sid, 'expected_text': item['text'], 'status': 'needs_visual_mapping',
+                  'differences': [], 'inspection_targets': list(targets.values())}
         if (not ranked or ranked[0][0] < .65 or
                 (len(ranked) > 1 and ranked[0][0] - ranked[1][0] < .08)):
             result['reason'] = 'No unique single OCR line; visually map the paragraph/occurrence.'
@@ -107,6 +116,18 @@ def locate(image_path, source_path, ocr_path, out):
                           and all(len(c.get('text', '')) == 1 and c.get('index') == n for n, c in enumerate(chars)))
         matcher = difflib.SequenceMatcher(None, expected, observed, autojunk=False)
         for tag, a, b, c, d in matcher.get_opcodes():
+            if tag == 'equal' or (tag == 'replace' and b-a == d-c):
+                for i, k in zip(range(a,b), range(c,d)):
+                    if tag == 'replace' and decompose(expected[i]) and i not in targets:
+                        targets[i] = {'expected_index': i, 'expected': expected[i],
+                                      'glyph_bbox': None, 'reason': 'ocr_difference',
+                                      'localization': 'needs_visual_location'}
+                    if i in targets:
+                        target = targets[i]
+                        target.update(observed_index=k, raw_ocr=observed[k])
+                        box = optional_box(chars[k].get('bbox'), image.size) if geometry_valid else None
+                        if box and box[2]-box[0] <= 1.8 * (box[3]-box[1]):
+                            target.update(glyph_bbox=box, localization='ocr_character_hint')
             if tag == 'equal':
                 continue
             intervals = [(a + k, a + k + 1, c + k, c + k + 1) for k in range(b-a)] if tag == 'replace' and b-a == d-c else [(a,b,c,d)]
@@ -122,6 +143,7 @@ def locate(image_path, source_path, ocr_path, out):
                         if box and box[2]-box[0] <= 1.8 * (box[3]-box[1]):
                             finding.update(glyph_bbox=box, localization='ocr_character_hint')
                 result['differences'].append(finding)
+        result['inspection_targets'] = [targets[i] for i in sorted(targets)]
         rows.append(result)
     result = {'schema_version': 1, 'kind': 'stroke-locations', 'status': 'needs_review',
               'image': bound(image_path), 'source': bound(source_path), 'ocr': bound(ocr_path),
