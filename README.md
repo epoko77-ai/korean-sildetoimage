@@ -2,6 +2,8 @@
 
 **한글 오타는 코드로 먼저 고치고, 이미지 생성은 꼭 필요할 때만.**
 
+한 글자의 오타만으로도 보는 사람은 자료 전체가 제대로 검토됐는지 의심할 수 있습니다. 잘 나온 디자인을 살리면서 한글을 바로잡아, 내용에 대한 신뢰까지 지키고 싶었습니다.
+
 `korean-sildetoimage`는 **이미 나온 이미지를 최대한 살리면서 한글을 교정하는 Codex 스킬**입니다. 원문과 글자 모양을 검수하고, 잘못 붙은 작은 획은 이미지 생성 모델을 다시 호출하지 않고 코드로 복구합니다. **코드로 해결하기 어려운 경우에만 필요한 부분을 생성형으로 편집합니다.**
 
 ```text
@@ -18,11 +20,11 @@ AI로 만든 슬라이드가 마음에 듭니다. 구도도, 색감도, 글자 �
 
 새 슬라이드를 만드는 요청도 지원합니다. 첫 이미지를 생성한 뒤에는 같은 원칙으로 검수하고, 코드로 고칠 수 있는 오류부터 복구합니다.
 
-![잘 만든 슬라이드, 한 글자가 아쉽다면 — korean-sildetoimage](docs/social/thumbnail.png)
+![한 글자의 오타가 자료의 신뢰를 흔들 때 — 코드로 획 복구부터](docs/social/github-social-preview.png)
 
-[30초 소개 영상](https://github.com/epoko77-ai/korean-sildetoimage/releases/download/intro-20261007/intro-vertical.mp4) · [실제 전후 비교](docs/evidence/README.md) · [검증 결과](docs/validation.md)
+[30초 소개 영상](https://github.com/epoko77-ai/korean-sildetoimage/releases/download/intro-20261007/intro-landscape.mp4) · [실제 전후 비교](docs/evidence/README.md) · [검증 결과](docs/validation.md)
 
-<a href="https://github.com/epoko77-ai/korean-sildetoimage/releases/download/intro-20261007/intro-vertical.mp4"><img src="docs/social/intro-preview.gif" width="270" alt="실제 슬라이드의 한글 획 복구 장면 미리보기"></a>
+<a href="https://github.com/epoko77-ai/korean-sildetoimage/releases/download/intro-20261007/intro-landscape.mp4"><img src="docs/social/intro-preview.gif" width="800" alt="실제 슬라이드의 한글 획 복구 장면 미리보기"></a>
 
 ## 실제로, 9픽셀만 바꿨습니다
 
@@ -36,7 +38,7 @@ AI로 만든 슬라이드가 마음에 듭니다. 구도도, 색감도, 글자 �
 | 지정한 획 영역 밖의 변경 | **0개** |
 | 획 복구 중 이미지 생성 호출 | **0회** |
 
-글꼴을 새로 입히지 않고, 확인한 작은 획을 주변 픽셀로 복구했습니다. 완성된 글자와 슬라이드를 다시 검수했습니다. 이 수치는 **이미 발견해 둔 오류 한 건의 개발 사례**이며, 모든 한글 오류를 9픽셀로 고친다는 뜻은 아닙니다. 썸네일은 원리를 설명하는 그림이고, 위 비교 이미지가 실제 실험 자료입니다.
+글꼴을 새로 입히지 않고, 확인한 작은 획을 주변 픽셀로 복구했습니다. 완성된 글자와 슬라이드를 다시 검수했습니다. 이 수치는 **이미 발견해 둔 오류 한 건의 개발 사례**이며, 모든 한글 오류를 9픽셀로 고친다는 뜻은 아닙니다. 위 비교 이미지와 공유용 썸네일의 글자 확대에는 같은 실제 복구 자료를 사용했습니다.
 
 ## 요청은 짧게 하세요
 
