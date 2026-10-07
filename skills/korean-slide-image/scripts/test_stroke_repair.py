@@ -39,7 +39,8 @@ class StrokeTests(unittest.TestCase):
         stroke.plan(self.base,self.source,review_path,plan)
         prompt=self.root/'plan-text.txt';prompt.write_text('근거: remove visually reviewed spur only.')
         request=self.root/'request.json'
-        flow.freeze(self.source,prompt,request,kind='local-stroke',target_ids=['line'],stroke_plan=plan)
+        run=self.root/'run.json';flow.init_run(self.source,self.base,run)
+        flow.freeze(self.source,prompt,request,kind='local-stroke',target_ids=['line'],stroke_plan=plan,run_path=run)
         return plan,request,prompt
 
     def candidate(self):

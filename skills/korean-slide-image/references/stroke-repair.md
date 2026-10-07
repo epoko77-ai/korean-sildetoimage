@@ -56,6 +56,22 @@ python3 "$SKILL_DIR/scripts/glyph_inspect.py" compare \
 
 `possible_difference`는 재확인할 위치이며 오자 확정이나 삭제 허가가 아니다. `unmapped`와 누락·불확실 판독은 시각 확인 대상으로 남는다. 카드에 없는 문구·숫자·추가 텍스트도 기존 전체 검수에서 확인한다. 이 보조 도구는 입력 이미지를 수정하지 않고 마스크도 만들지 않는다. 카드 판독과 원문 대조 후에는 **원본 문맥에서 실제 위치·전체 글자 구조를 확인**하고 아래 수정 판단으로 이어간다.
 
+여러 줄 문단·반복 문구 때문에 OCR이 원문과 대응되지 않으면 실행자가 전체 이미지와 확대본을 보고 위치를 확인한다. 좌표를 사용자에게 요구하거나 줄 너비를 글자 수로 나누지 않는다. 다음 `manual-boxes.json`을 준비할 수 있다.
+
+```json
+{
+  "kind":"glyph-manual-locations",
+  "image_sha256":"<base.png SHA-256>", "source_sha256":"<source.json SHA-256>",
+  "reviewer":"<실제로 위치를 본 실행자>",
+  "entries":[{"item_id":"line", "expected_index":7, "glyph_bbox":[120,80,148,112],
+              "note":"<어느 문구의 어느 음절을 어떻게 확인했는지>"}]
+}
+```
+
+`expected_index`는 NFC 원문 문자열에서 공백·구두점도 세는 0부터 시작하는 음절 위치다. `prepare --manual-boxes manual-boxes.json`을 추가하면 해당 위치가 OCR 힌트보다 우선하고 두 좌표를 모두 기록한다. `--ocr`을 생략하면 수동으로 선택한 글자만 카드로 만들며, 전체 원문 검수는 별도로 수행한다. 이 상자는 삭제 마스크가 아니다. 파일 해시·문구 id·index·좌표가 잘못되면 거절하고 큰 상자는 미해결로 남긴다.
+
+사용한 packet은 해당 이미지의 `workflow.py register --inspection`으로 연결하고, 판독·미해결 위치의 문맥 재확인은 [workflow.md](workflow.md)의 `glyph_inspections`에 남긴다. 이미지가 바뀐 뒤에는 최종 이미지의 카드를 새로 준비한다.
+
 대상 단어를 최근접 방식으로 8~16배 확대하고 다음을 확인한다.
 
 - 초성·중성·종성 중 어디가 다른지, 지울 부분과 보존할 부분이 분리되는지.
@@ -104,9 +120,13 @@ python3 "$SKILL_DIR/scripts/stroke_repair.py" plan \
 정답 문구와 계획 설명을 `plan-text.txt`에 저장하고 다음 순서를 따른다.
 
 ```bash
+python3 "$SKILL_DIR/scripts/workflow.py" init-run \
+  --source "$RUN_DIR/source.json" --image "$RUN_DIR/base.png" \
+  --out "$RUN_DIR/repair-run.json"
 python3 "$SKILL_DIR/scripts/workflow.py" freeze \
   --source "$RUN_DIR/source.json" --prompt "$RUN_DIR/plan-text.txt" \
   --kind local-stroke --target-id line --stroke-plan "$RUN_DIR/plan.json" \
+  --run "$RUN_DIR/repair-run.json" \
   --out "$RUN_DIR/request.json"
 python3 "$SKILL_DIR/scripts/stroke_repair.py" apply \
   --plan "$RUN_DIR/plan.json" --request "$RUN_DIR/request.json" \
@@ -117,6 +137,8 @@ python3 "$SKILL_DIR/scripts/workflow.py" register \
 ```
 
 후보는 항상 `needs_review`로 시작한다. 한 계획에서 후보 하나만 만들고, 실패한 후보를 다시 깎는 연속 보정은 하지 않는다. 원본·계획·결과는 덮어쓰지 않는다.
+
+위 `init-run`은 첫 수정에서 한 번만 실행한다. 뒤의 다른 오타를 수정할 때는 같은 run과 이전 보고서들을 `--prior-patch`로 연결한다. 이미 선택한 점검이 있으면 해당 PNG의 등록에 `--inspection`을 포함한다.
 
 ## 최종 글자와 디자인을 다시 검수한다
 

@@ -151,7 +151,9 @@ class WorkflowTests(unittest.TestCase):
         job = self.root/'job.json'
         patch.crop(self.image, [0, 0, 96, 64], [5, 5, 35, 25], 1, self.root/'crop.png', job)
         request = self.root/'edit-request.json'
-        flow.freeze(self.source, self.prompt, request, kind='edit', target_ids=['a'], preserve_job=job)
+        run = self.root/'repair-run.json'
+        flow.init_run(self.source, self.image, run)
+        flow.freeze(self.source, self.prompt, request, kind='edit', target_ids=['a'], preserve_job=job, run_path=run)
         generated = self.root/'generated.png'
         Image.new('RGBA', (96, 64), (50, 60, 70, 255)).save(generated)
         final, report = self.root/'fixed.png', self.root/'patch.json'

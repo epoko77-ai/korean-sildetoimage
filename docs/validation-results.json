@@ -221,7 +221,7 @@
     "note": "The 2 new generated slides were intentionally prompted with errors; they are reported separately and have no rerolls. One was repaired and one was deferred."
   },
   "mechanical_validation": {
-    "unit_tests_passed": 52,
+    "unit_tests_passed": 73,
     "independent_review_assertions_passed": 19,
     "checks_do_not_read_hangul": true,
     "post_study_fix": "Invalid or empty OCR geometry now preserves copy differences and requests visual location instead of terminating the locator."
@@ -375,5 +375,68 @@
       }
     },
     "interpretation": "Descriptive sum of two separately executed controlled-font cohorts (12+36). Final outcome includes isolated reading then whole-context review. No deletion success-rate measurement; one different reviewer per arm per cohort, so workflow and reader variation cannot be isolated."
+  },
+  "workflow_hardening": {
+    "date": "2026-10-07",
+    "changes": [
+      "Image/source-bound manual glyph locations, including OCR-unavailable operation.",
+      "Selected inspection packets and bound readings require explicit context adjudication of unresolved targets at gate/release.",
+      "New composited requests require a frozen original run and preceding patch evidence; release rechecks every stage and original-to-final mask union."
+    ],
+    "mechanical_tests_added": 21,
+    "known_error_location_diagnostic": {
+      "images": 15,
+      "known_error_source_items": 23,
+      "source_item_location_statuses": {
+        "needs_visual_mapping": 12,
+        "needs_visual_review": 11
+      },
+      "unambiguous_hangul_substitutions": 23,
+      "substitutions_with_inspection_target": 19,
+      "substitutions_with_ocr_character_hint": 10,
+      "supported_jamo_substitutions": 18,
+      "supported_jamo_substitutions_with_hint": 9,
+      "items_with_unaligned_hangul_changes": 0,
+      "by_case": {
+        "footnotes": {
+          "items": 4,
+          "substitutions": 4,
+          "substitutions_with_hint": 1
+        },
+        "long_prose": {
+          "items": 7,
+          "substitutions": 7,
+          "substitutions_with_hint": 0
+        },
+        "photo_overlay": {
+          "items": 1,
+          "substitutions": 1,
+          "substitutions_with_hint": 0
+        },
+        "small_type": {
+          "items": 10,
+          "substitutions": 10,
+          "substitutions_with_hint": 9
+        },
+        "timeline": {
+          "items": 1,
+          "substitutions": 1,
+          "substitutions_with_hint": 0
+        }
+      }
+    },
+    "diagnostic_limits": "Previously reviewed generated images, selected for known errors. Coordinate hints were not all visually validated. This is not new detection accuracy or a repairability/success-rate estimate.",
+    "development_example": {
+      "scope": "Known-error development example; not new blinded detection or repair-rate evidence. Single root visual reviewer.",
+      "correction": "중가→증가",
+      "manual_location_succeeded": true,
+      "changed_pixels": 9,
+      "outside_stroke_mask_changed_pixels": 0,
+      "image_generation_calls": 0,
+      "gate": "verified",
+      "preservation_scope": "cumulative",
+      "glyph_inspections_selected": 1
+    },
+    "legacy_preservation_scope": "Old schema-1 preservation requests remain explicitly single_step_legacy; new requests cannot omit the original run contract."
   }
 }

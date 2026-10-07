@@ -45,27 +45,76 @@ def card(base, hint, crop_box, label):
     return output, scale
 
 
-def prepare(image_path, source_path, ocr_path, out_dir):
+def selected_targets(locations, image_path, source_path, manual_path=None):
+    targets = {(item['id'], t['expected_index']): {'item_id': item['id'], **t}
+               for item in locations['items'] for t in item['inspection_targets']}
+    if manual_path:
+        manual = stroke.read(manual_path)
+        if (manual.get('kind') != 'glyph-manual-locations'
+                or manual.get('image_sha256') != patch.file_hash(image_path)
+                or manual.get('source_sha256') != patch.file_hash(source_path)):
+            raise ValueError('Manual locations belong to another image or source')
+        if not isinstance(manual.get('reviewer'), str) or not manual['reviewer'].strip():
+            raise ValueError('Name the visual locator')
+        source = text.indexed_items(stroke.read(source_path))
+        size = patch.load_image(image_path).size
+        seen = set()
+        if not isinstance(manual.get('entries'), list) or not manual['entries']:
+            raise ValueError('Manual locations need entries')
+        for row in manual['entries']:
+            sid, index = row.get('item_id'), row.get('expected_index')
+            if sid not in source or type(index) is not int:
+                raise ValueError('Manual location needs a known item and character index')
+            expected = text.canonical(source[sid]['text'])
+            key = sid, index
+            if key in seen or not 0 <= index < len(expected) or not stroke.decompose(expected[index]):
+                raise ValueError('Manual location is duplicate or does not select one Hangul syllable')
+            seen.add(key)
+            box = list(patch.box(row.get('glyph_bbox'), size))
+            if box[2]-box[0] > 1.8*(box[3]-box[1]):
+                raise ValueError('Use a visually located glyph box, not an entire line')
+            if not isinstance(row.get('note'), str) or not row['note'].strip():
+                raise ValueError('Explain the visually identified glyph location')
+            previous = targets.get(key, {})
+            targets[key] = {**previous, 'item_id': sid, 'expected_index': index,
+                            'expected': expected[index], 'glyph_bbox': box,
+                            'ocr_glyph_bbox': previous.get('glyph_bbox'),
+                            'localization': 'manual_visual_hint',
+                            'reason': previous.get('reason', 'manual_selection'),
+                            'locator': manual['reviewer'], 'location_note': row['note']}
+    return targets
+
+
+def prepare(image_path, source_path, ocr_path, out_dir, manual_path=None):
+    if not ocr_path and not manual_path:
+        raise ValueError('Provide raw OCR or visually reviewed manual locations')
     root = Path(out_dir).resolve()
     if root.exists():
         raise ValueError('Use a new inspection directory; do not overwrite readings')
     root.mkdir(parents=True)
     locations_path = root/'locations.json'
-    locations = stroke.locate(image_path,source_path,ocr_path,locations_path)
+    if ocr_path:
+        locations = stroke.locate(image_path,source_path,ocr_path,locations_path)
+    else:
+        # Manual-only inspection covers explicitly selected glyphs, not all text.
+        locations = {'kind': 'stroke-locations', 'image': stroke.bound(image_path),
+                     'source': stroke.bound(source_path), 'ocr': None,
+                     'items': [{'id': sid, 'inspection_targets': []}
+                               for sid in text.indexed_items(stroke.read(source_path))]}
+        patch.save_json(locations, locations_path)
     base = patch.load_image(image_path)
     entries, unmapped = [], []
-    for item in locations['items']:
-        for target in item['inspection_targets']:
-            entry = {'item_id': item['id'], **target}
-            if not target['glyph_bbox']:
-                unmapped.append(entry)
-                continue
-            hint = target['glyph_bbox']
-            crop_box = expanded_box(hint,base.size)
-            if crop_box[2]-crop_box[0] > CELL-32 or crop_box[3]-crop_box[1] > CELL-64:
-                unmapped.append({**entry,'reason':'hint_too_large'})
-                continue
-            entries.append({**entry,'id':secrets.token_hex(6),'crop_box':crop_box})
+    targets = selected_targets(locations, image_path, source_path, manual_path)
+    for entry in targets.values():
+        if not entry['glyph_bbox']:
+            unmapped.append(entry)
+            continue
+        hint = entry['glyph_bbox']
+        crop_box = expanded_box(hint,base.size)
+        if crop_box[2]-crop_box[0] > CELL-32 or crop_box[3]-crop_box[1] > CELL-64:
+            unmapped.append({**entry,'reason':'hint_too_large'})
+            continue
+        entries.append({**entry,'id':secrets.token_hex(6),'crop_box':crop_box})
     random.SystemRandom().shuffle(entries)
     blind_entries, sheets = [], []
     for start in range(0,len(entries),4):
@@ -84,22 +133,49 @@ def prepare(image_path, source_path, ocr_path, out_dir):
     patch.save_json({'schema_version':1,'kind':'glyph-inspection-blind',
                      'instructions':'Read the whole glyph near the blue ticks from its pixels. The ticks are only a position hint; include visible strokes in the surrounding halo. Do not guess from neighboring words. If the target or its strokes are unclear, record uncertain. No expected text is included.',
                      'entries':blind_entries,'sheets':sheets},blind_path)
-    packet = {'schema_version':1,'kind':'glyph-inspection-packet','status':'needs_review',
+    packet = {'schema_version':2,'kind':'glyph-inspection-packet','status':'needs_review',
               'image':stroke.bound(image_path),'source':stroke.bound(source_path),
-              'ocr':stroke.bound(ocr_path),'locations':stroke.bound(locations_path),
+              'ocr':stroke.bound(ocr_path) if ocr_path else None,'locations':stroke.bound(locations_path),
+              'manual_locations': stroke.bound(manual_path) if manual_path else None,
               'blind':stroke.bound(blind_path),'entries':entries,'unmapped':unmapped,
-              'scope':'Source vowels ㅡ/ㅓ and individually aligned OCR differences; not all text.',
+              'scope': ('Source vowels ㅡ/ㅓ, aligned OCR differences and manual selections; not all text.'
+                        if ocr_path else 'Manually selected glyphs only; not all text.'),
               'automatic_error_detection':False,'automatic_mask_detection':False}
     patch.save_json(packet,root/'packet.json')
     return packet
 
 
-def compare(packet_path, readings_path, out):
+def validate_packet(packet_path):
     packet = stroke.read(packet_path)
     if packet.get('kind') != 'glyph-inspection-packet':
         raise ValueError('Expected a glyph inspection packet')
-    for key in ('image','source','ocr','locations','blind'):
+    for key in ('image','source','locations','blind'):
         stroke.check(packet[key])
+    for key in ('ocr', 'manual_locations'):
+        if packet.get(key):
+            stroke.check(packet[key])
+    locations = stroke.read(packet['locations']['path'])
+    for key in ('image', 'source', 'ocr'):
+        if locations.get(key) != packet.get(key):
+            raise ValueError('Inspection location inputs do not agree')
+    targets = selected_targets(locations, packet['image']['path'], packet['source']['path'],
+                               packet['manual_locations']['path'] if packet.get('manual_locations') else None)
+    source = text.indexed_items(stroke.read(packet['source']['path']))
+    selected = {}
+    for row in packet['entries'] + packet['unmapped']:
+        key = row['item_id'], row['expected_index']
+        if key in selected or key not in targets:
+            raise ValueError('Unknown or duplicate inspection target')
+        selected[key] = row
+        if any(row.get(k) != targets[key].get(k) for k in
+               ('expected', 'glyph_bbox', 'localization')):
+            raise ValueError('Inspection target differs from its location evidence')
+        expected = text.canonical(source[row['item_id']]['text'])
+        if (type(row['expected_index']) is not int or not 0 <= row['expected_index'] < len(expected)
+                or row['expected'] != expected[row['expected_index']]):
+            raise ValueError('Inspection target differs from source text')
+    if set(selected) != set(targets):
+        raise ValueError('Inspection targets were omitted')
     blind = stroke.read(packet['blind']['path'])
     entries = {row['id']:row for row in packet['entries']}
     if len(entries) != len(packet['entries']) or set(entries) != {row['id'] for row in blind['entries']}:
@@ -110,6 +186,12 @@ def compare(packet_path, readings_path, out):
         stroke.check(row['card'])
     for sheet in blind['sheets']:
         stroke.check(sheet)
+    return packet
+
+
+def evaluate(packet_path, readings_path):
+    packet = validate_packet(packet_path)
+    entries = {row['id']:row for row in packet['entries']}
     readings = stroke.read(readings_path)
     if readings.get('blind_sha256') != packet['blind']['sha256']:
         raise ValueError('Readings belong to different cards')
@@ -142,6 +224,11 @@ def compare(packet_path, readings_path, out):
               'unmapped':packet['unmapped'],
               'counts':{status:sum(row['status']==status for row in results)
                         for status in ('agrees','possible_difference','needs_visual_review')}}
+    return result
+
+
+def compare(packet_path, readings_path, out):
+    result = evaluate(packet_path, readings_path)
     patch.fresh(out)
     patch.save_json(result,out)
     return result
@@ -151,14 +238,16 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest='command',required=True)
     p = commands.add_parser('prepare')
-    for arg in ('image','source','ocr','out-dir'):
+    for arg in ('image','source','out-dir'):
         p.add_argument('--'+arg,required=True)
+    p.add_argument('--ocr')
+    p.add_argument('--manual-boxes')
     p = commands.add_parser('compare')
     for arg in ('packet','readings','out'):
         p.add_argument('--'+arg,required=True)
     args = parser.parse_args()
     if args.command == 'prepare':
-        result = prepare(args.image,args.source,args.ocr,args.out_dir)
+        result = prepare(args.image,args.source,args.ocr,args.out_dir,args.manual_boxes)
         print(f"{len(result['entries'])} cards; {len(result['unmapped'])} targets need visual location")
     else:
         result = compare(args.packet,args.readings,args.out)

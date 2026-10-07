@@ -23,6 +23,8 @@ python3 "$SKILL_DIR/scripts/patch_image.py" prepare \
 
 EXIF 방향을 적용하고 RGBA로 한 번 변환한다. ICC 프로파일은 보존한다. 이후 보존 비교의 기준은 이 파일이다. JPEG 재압축이나 최종 이미지 전체 리사이즈는 이 단계 이후에 하지 않는다. 사용자용 축소본이 필요하면 검증된 원본 PNG와 별도로 내보내고 픽셀 동일성 주장은 원본 PNG에 한정한다.
 
+첫 수정 전에 `workflow.py init-run --source source.json --image base.png --out repair-run.json`으로 이 원본을 고정한다. 이후 모든 합성 요청은 같은 `--run`을 사용한다. [실행 절차](workflow.md)의 명령을 따른다.
+
 ## 두 영역을 정하고 추출
 
 ```bash
@@ -38,7 +40,7 @@ python3 "$SKILL_DIR/scripts/patch_image.py" crop \
 
 job 파일에는 기준본·crop 파일의 SHA-256, 원본 크기, 두 영역, 배율이 담긴다. 중간에 기준본이 바뀌면 합성을 거절한다. 서로 떨어진 오류는 별도 작업으로 처리한다. 영역이 겹치면 새로 승인한 기준본에서 다음 crop을 만든다.
 
-도구 호출 전에 이 job을 `workflow.py freeze --preserve-job`으로 연결한다. 실제 문구·참조 파일과 함께 고정하는 명령은 [workflow.md](workflow.md)를 따른다.
+도구 호출 전에 이 job을 `workflow.py freeze --preserve-job ... --run ...`으로 연결한다. 두 번째 수정부터는 이전 보고서들을 시간순으로 `--prior-patch`에 전달한다. 실제 문구·참조 파일과 함께 고정하는 명령은 [workflow.md](workflow.md)를 따른다.
 
 ## 생성형 교정
 
@@ -85,6 +87,8 @@ python3 "$SKILL_DIR/scripts/patch_image.py" compose \
 `review.design.note`에 어떤 기준본과 비교했는지, 글자·효과·배경에서 실제로 확인한 결과를 적는다. 한 항목이라도 어긋나면 `design.status: failed`, 판단하지 못했으면 `not_checked`로 남긴다. 문구의 정확성이나 영역 밖 변경 0픽셀이 내부 디자인 실패를 상쇄하지 않는다. 비교에서 탈락한 후보를 다음 수정의 기준으로 삼지 않는다.
 
 ## 누적 보존 검사
+
+새 합성 요청은 고정한 run과 이전 보고서를 통해 `gate/release`에서 각 단계 및 최초 원본부터의 보존을 자동 검사한다. 아래 명령은 별도의 사각형 합집합 진단이며, 실제 획 마스크·계획 재검사를 포함한 출고 검사를 대체하지 않는다.
 
 ```bash
 python3 "$SKILL_DIR/scripts/patch_image.py" verify \

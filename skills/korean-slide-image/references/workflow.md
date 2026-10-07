@@ -37,6 +37,8 @@ python3 "$SKILL_DIR/scripts/workflow.py" register \
 
 고정한 자료·실제 프롬프트의 해시를 확인하고 PNG를 실제로 디코딩한다. 크기 요청을 도구가 따랐는지도 직접 확인한다. 상태는 `needs_review`로 시작한다. JPEG·EXIF 회전 이미지는 `patch_image.py prepare`로 별도 정규화한 뒤 등록한다. 파일 바이트가 바뀌면 새 후보다. 이미 존재하는 파일은 덮어쓰지 않는다.
 
+글자 분리 점검을 사용하는 후보는 카드를 준비한 뒤 `register`에 `--inspection "$RUN_DIR/inspection/packet.json"`을 추가한다. 이미 등록했다면 같은 요청·이미지에 점검을 연결한 새 후보 기록을 만들고 이후에는 그 기록을 쓴다. 판독은 등록 후에 해도 된다. 최종 PNG가 바뀌면 그 이미지의 새 카드를 쓰며, 이전 이미지의 카드를 최종 검수 증거로 재사용하지 않는다.
+
 ## 3. 원시 OCR과 시각 판정
 
 가능하면 정답을 제공하지 않은 OCR을 먼저 실행한다. 로컬 예:
@@ -83,20 +85,44 @@ python3 "$SKILL_DIR/scripts/workflow.py" gate \
 
 직접 시각 전사 경로에서는 `--ocr`을 생략한다. 오류가 남으면 `unresolved`, 누락된 검수·미판독 항목이 있으면 `needs_review`, 문구·디자인 및 요청한 보존 검사를 통과하면 `verified`다. 종료 코드 0은 통과, 2는 미통과, 1은 입력·실행 오류다. 실패 뒤 기존 기록을 고쳐 덮지 말고 새 버전으로 검수한다.
 
+### 선택한 글자 점검을 최종 판정에 연결
+
+후보에 등록한 각 packet은 `review.json`의 `glyph_inspections`에 연결한다. `readings`의 path와 SHA-256은 실제 판독 파일에서 계산한다. 등록된 점검을 생략하면 전체 문구를 `correct`로 적어도 통과하지 않는다.
+
+```json
+"glyph_inspections": [{
+  "packet_sha256":"<등록한 packet.json의 SHA-256>",
+  "readings":{"path":"<readings.json 절대 경로>","sha256":"<파일 SHA-256>"},
+  "resolutions":[{
+    "item_id":"value", "expected_index":11,
+    "status":"correct", "observed_text":"증", "bbox":[320,250,348,280],
+    "note":"<원본 문맥에서 실제 위치와 완성된 음절을 다시 본 근거>"
+  }]
+}]
+```
+
+`possible_difference`, 누락·불확실 판독, `unmapped` 각각에 원문 id와 NFC 문자열의 0부터 시작하는 글자 index로 재확인 결과를 적는다. 여전히 모호하면 `uncertain`, 실제 오류면 `incorrect`로 남긴다. 카드에서 일치한 글자는 별도 resolution 없이 기존 전체 문구 검수로 확인한다. `gate/release`는 판독을 다시 대조하고 파일 연결을 재검사한다. 이 기록도 시각 판정의 진실성을 자동 보증하지는 않는다. 글자 점검을 선택하지 않은 직접 시각 검수 경로는 그대로 쓸 수 있다.
+
 ## 4. 수정 결과 연결
 
 코드 합성이 현재 지시와 도구 규칙에서 허용되었으면 [repair.md](repair.md)에 따라 **수정 전에** 기준본과 영역을 고정한다. 사용 예시에 합성·폰트 교체를 일괄 허용하는 문장을 요구하지 않는다. 수단의 허용과 디자인 변경 여부는 별개로 판단한다.
 
 ```bash
+python3 "$SKILL_DIR/scripts/workflow.py" init-run \
+  --source "$RUN_DIR/source.json" --image "$RUN_DIR/base.png" \
+  --out "$RUN_DIR/repair-run.json"
 python3 "$SKILL_DIR/scripts/workflow.py" freeze \
   --source "$RUN_DIR/source.json" --prompt "$RUN_DIR/edit-prompt.txt" \
   --kind edit --target-id value --reference "$RUN_DIR/edit-input.png" \
-  --preserve-job "$RUN_DIR/edit-job.json" --out "$RUN_DIR/edit-request.json"
+  --preserve-job "$RUN_DIR/edit-job.json" --run "$RUN_DIR/repair-run.json" \
+  --out "$RUN_DIR/edit-request.json"
 ```
 
 합성 결과를 `register`한 후 `gate`에 `--patch-report "$RUN_DIR/edit-check.json"`을 추가한다. 보고서의 `passed` 값만 믿지 않고 고정한 기준본과 실제 출력의 영역 밖 RGBA 픽셀을 다시 비교한다. 요청 전에 고정하지 않은 영역이나 다른 작업의 보고서를 받아들이지 않는다. 수정 영역 안의 글자·디자인은 여전히 시각 판정이 필요하다.
 
-서로 다른 오류를 순차 수정하면 단계별 job·후보·보고서를 보관한다. 마지막 `gate`의 보존 판정 범위는 **해당 요청의 기준본과 수정 영역**이다. 최초 원본 대비 누적 보존을 주장하려면 `patch_image.py verify`로 전체 보고서 연결과 영역 합집합 밖을 별도 검사한다. 임의로 승인 영역을 넓혀 통과시키지 않는다.
+`init-run`은 최초 디자인 기준본에 대해 한 번 실행한다. 서로 다른 오류를 순차 수정하면 같은 `--run`을 유지하고, 다음 `freeze`에 이전 보고서들을 시간순으로 `--prior-patch "$RUN_DIR/edit-01-check.json"`처럼 반복한다. 중간 수정본으로 run을 다시 만들어 원본을 바꾸지 않는다. 원본에서 현재 기준본까지 보고서가 빠지거나 연결이 끊기면 수정 요청을 거절한다.
+
+새 합성 요청의 `gate/release`는 각 단계의 실제 이미지와 최초 원본 대비 누적 보존을 재검사한다. 획 복구 단계는 사각형보다 좁은 실제 획 마스크도 검사한다. 이전 버전의 요청 기록은 호환용으로 읽되 영수증에 `single_step_legacy`로 한정하며, 새 요청은 `--run` 생략으로 이 모드로 전환할 수 없다. 합성하지 않은 생성형 편집에는 픽셀 동일성을 주장하지 않는다.
 
 ## 5. 최종 PNG 출고
 

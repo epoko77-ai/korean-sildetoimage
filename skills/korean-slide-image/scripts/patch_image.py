@@ -207,6 +207,49 @@ def verify(base_path, final_path, report_paths, out):
     return result
 
 
+def audit_chain(base_path, final_path, report_paths):
+    """Recheck each actual intermediate image, then the original-to-final mask union."""
+    base, final = load_image(base_path), load_image(final_path)
+    current_hash = file_hash(base_path)
+    allowed = Image.new('L', base.size, 0)
+    for path in report_paths:
+        report = json.loads(Path(path).read_text(encoding='utf-8'))
+        if report.get('kind') != 'patch' or report.get('base_file_sha256') != current_hash:
+            raise ValueError('Patch chain is missing, disconnected, or out of order')
+        job = json.loads(Path(report['job']).read_text(encoding='utf-8'))
+        if (job['base_file_sha256'] != current_hash or file_hash(job['base']) != current_hash
+                or file_hash(job['crop']) != job['crop_sha256']
+                or file_hash(report['out']) != report['output_file_sha256']
+                or job['edit_box'] != report['edit_box']):
+            raise ValueError('Patch chain evidence changed or does not match its job')
+        before, after = load_image(job['base']), load_image(report['out'])
+        if before.size != base.size or after.size != base.size:
+            raise ValueError('Patch chain dimensions differ from the original')
+        if report.get('stroke_plan'):
+            import stroke_repair
+            plan_path = stroke_repair.check(report['stroke_plan'])
+            plan = stroke_repair.validate_plan(plan_path)
+            if (plan['job']['path'] != str(Path(report['job']).resolve())
+                    or plan['base']['sha256'] != current_hash
+                    or not stroke_repair.verify_result(plan_path, report['out'])['passed']):
+                raise ValueError('Intermediate stroke repair differs from its frozen plan')
+            allowed = ImageChops.lighter(allowed, Image.open(plan['mask']['path']).convert('L'))
+        else:
+            if not preservation(before, after, [job['edit_box']])['outside_pixels_equal']:
+                raise ValueError('An intermediate patch changed pixels outside its approved region')
+            fill_rect(allowed, box(job['edit_box'], base.size))
+        current_hash = report['output_file_sha256']
+    if current_hash != file_hash(final_path):
+        raise ValueError('Patch chain does not reach the supplied image')
+    delta = changed_mask(base, final)
+    outside = ImageChops.multiply(delta, ImageOps.invert(allowed))
+    return {'scope': 'cumulative', 'steps': len(report_paths),
+            'changed_pixels_total': delta.histogram()[255],
+            'changed_pixels_outside': outside.histogram()[255],
+            'outside_pixels_equal': outside.getbbox() is None,
+            'passed': outside.getbbox() is None}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest='command', required=True)
