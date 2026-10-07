@@ -25,6 +25,6 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
       - name: Run unit tests
-        run: python -B -m unittest discover -s skills/korean-slide-image/scripts -p 'test_*.py' -v
+        run: python -B -m unittest discover -s skills/korean-sildetoimage/scripts -p 'test_*.py' -v
       - name: Verify published pixel examples
         run: python tools/verify_examples.py

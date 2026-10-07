@@ -1,0 +1,38 @@
+{
+  "video": {
+    "video": "intro-vertical.mp4",
+    "width": 1080,
+    "height": 1920,
+    "fps": "30/1",
+    "video_duration_seconds": 30.0,
+    "frames": 900,
+    "video_codec": "h264",
+    "pixel_format": "yuv420p",
+    "audio_codec": "aac",
+    "audio_sample_rate": "48000",
+    "size_bytes": 6020210,
+    "sha256": "47828e4a76d962e68d6b5af94e11924dea297e51117826f928ecf41d1f8b3416",
+    "full_decode": "passed",
+    "source_changed_rgba_pixels": 9,
+    "source_diff_bbox": [
+      1289,
+      515,
+      1292,
+      518
+    ],
+    "model": "claude-opus-5-5",
+    "visual_review": "Passed: seven representative encoded samples on the first render, then the revised headline in the final encoded MP4; final file fully decoded without error.",
+    "audio_mean_db": -24.2,
+    "audio_peak_db": -9.1,
+    "copy_revision": "Code stroke repair first; generative edits only when needed."
+  },
+  "thumbnail": {
+    "file": "thumbnail.png",
+    "width": 1672,
+    "height": 941,
+    "sha256": "cb7fe55894f976d0a6f943fa9025ef3aa0062e6a40dfb1e5e298ea954789f8fa",
+    "method": "Built-in image generation edit; visual and unprompted Apple Vision OCR review; workflow gate/release verified.",
+    "pixel_identity_claimed": false
+  },
+  "scope": "Video metrics describe the exported MP4. The 9-pixel measurement describes the original repair image pair, not encoded video frames."
+}

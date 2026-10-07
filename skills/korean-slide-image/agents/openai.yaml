@@ -1,4 +1,0 @@
-interface:
-  display_name: "한글 슬라이드 이미지 교정"
-  short_description: "한글 원문과 디자인을 지키는 슬라이드 이미지 생성·오타 교정"
-  default_prompt: "$korean-slide-image로 이 슬라이드를 이미지로 만들어줘."

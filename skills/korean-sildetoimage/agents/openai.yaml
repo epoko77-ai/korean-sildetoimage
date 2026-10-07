@@ -1,0 +1,4 @@
+interface:
+  display_name: "korean-sildetoimage"
+  short_description: "한글 오타는 코드 획 복구 우선, 생성형 편집은 필요할 때만"
+  default_prompt: "$korean-sildetoimage로 이 슬라이드를 이미지로 만들어줘."

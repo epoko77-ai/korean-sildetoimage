@@ -10,7 +10,7 @@ from pathlib import Path
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0,str(ROOT/'skills/korean-slide-image/scripts'))
+sys.path.insert(0,str(ROOT/'skills/korean-sildetoimage/scripts'))
 import stroke_repair as stroke
 
 
