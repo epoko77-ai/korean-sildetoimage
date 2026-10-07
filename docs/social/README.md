@@ -5,7 +5,6 @@
 - [30초 가로 소개 영상 · MP4, 약 6MB](https://github.com/epoko77-ai/korean-sildetoimage/releases/download/intro-20261007/intro-landscape.mp4)
 - [GitHub·페이스북 공유용 썸네일 · 1280×640 PNG](github-social-preview.png)
 - [기존 SNS 썸네일 · PNG](thumbnail.png)
-- [페이스북 소개 글](facebook-post.txt) · [짧은 SNS 게시글](post.txt)
 - [영상 렌더러·스토리보드·실제 전후 원본 · ZIP, 약 3MB](https://github.com/epoko77-ai/korean-sildetoimage/releases/download/intro-20261007/intro-source.zip)
 
 ![실제 획 복구 장면 미리보기](intro-preview.gif)
@@ -18,6 +17,6 @@ GitHub·페이스북 공유용 썸네일은 실제 복구 전후의 글자를 �
 
 최종 영상은 전체 디코딩, 길이·해상도·프레임 수·오디오 확인과 대표 시점 7장의 시각 점검을 마쳤습니다. [검사 요약](media-checks.json)
 
-큰 MP4와 재현용 원본은 릴리스에서 선택적으로 받을 수 있습니다. 저장소에는 가벼운 미리보기와 썸네일, 게시글만 포함합니다. SNS 게시글은 바로 사용할 수 있는 초안이며, 실제 SNS 계정에는 게시하지 않았습니다.
+큰 MP4와 재현용 원본은 릴리스에서 선택적으로 받을 수 있습니다. 저장소에는 가벼운 미리보기와 썸네일을 포함합니다.
 
 GitHub 공유용 PNG는 1MB 미만으로 준비했습니다. README 이미지와 링크 공유 시 나타나는 Social preview는 별도 설정입니다. 저장소 파일을 올리는 것만으로 공유 미리보기가 바뀌지는 않습니다. [GitHub 공식 등록 안내](https://docs.github.com/ko/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/customizing-your-repositorys-social-media-preview)에 따라 Settings → Social preview → Edit → Upload an image에서 선택합니다.

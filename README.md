@@ -100,7 +100,7 @@ https://github.com/epoko77-ai/korean-sildetoimage/tree/main/skills/korean-sildet
 - [검증 방법과 결과](docs/validation.md) · [집계 JSON](docs/validation-results.json) · [48장 점검 CSV](docs/inspection-results.csv)
 - [스킬 지침](skills/korean-sildetoimage/SKILL.md) · [실행·검수 기록](skills/korean-sildetoimage/references/workflow.md)
 - [획 복구 방법](skills/korean-sildetoimage/references/stroke-repair.md) · [부분 편집과 디자인 보존](skills/korean-sildetoimage/references/repair.md)
-- [소개 영상·썸네일·SNS 글](docs/social/README.md)
+- [소개 영상·썸네일](docs/social/README.md)
 
 저장소에는 대표 이미지와 집계 결과를 담았습니다. 대용량 실험 원본이나 전체 OCR 로그를 내려받을 필요는 없습니다.
 
